@@ -183,11 +183,11 @@ export default function Popup() {
                 <input
                 type="number"
                 value={days}
-                onChange={(e) => setDays(Math.max(1, e.target.value))}
-                className="w-full p-4 pl-5 rounded-2xl bg-neo-bg shadow-neo-inset-deep outline-none focus:ring-2 focus:ring-neo-accent focus:ring-offset-2 focus:ring-offset-neo-bg transition-shadow text-sm font-medium"
+                onChange={(e) => setDays(Math.max(1, parseInt(e.target.value) || 1))}
+                className="w-full p-4 pl-5 pr-16 rounded-2xl bg-neo-bg shadow-neo-inset-deep outline-none focus:ring-2 focus:ring-neo-accent focus:ring-offset-2 focus:ring-offset-neo-bg transition-shadow text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 min="1"
                 />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neo-muted font-bold text-xs uppercase tracking-widest pointer-events-none">days</span>
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neo-muted font-bold text-xs uppercase tracking-widest pointer-events-none">days</span>
             </div>
             <button
                 onClick={addSite}
