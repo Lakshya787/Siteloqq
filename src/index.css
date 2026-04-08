@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neo-bg: #E0E5EC;
+  --color-neo-text: #3D4852;
+  --color-neo-muted: #6B7280;
+  --color-neo-accent: #6C63FF;
+  --color-neo-accent-light: #8B84FF;
+  --color-neo-success: #38B2AC;
+  --color-neo-alert: #EF4444;
+}
+
+@utility shadow-neo {
+  box-shadow: 9px 9px 16px rgba(163,177,198,0.6), -9px -9px 16px rgba(255,255,255,0.5);
+}
+@utility shadow-neo-hover {
+  box-shadow: 12px 12px 20px rgba(163,177,198,0.7), -12px -12px 20px rgba(255,255,255,0.6);
+}
+@utility shadow-neo-sm {
+  box-shadow: 5px 5px 10px rgba(163,177,198,0.6), -5px -5px 10px rgba(255,255,255,0.5);
+}
+@utility shadow-neo-inset {
+  box-shadow: inset 6px 6px 10px rgba(163,177,198,0.6), inset -6px -6px 10px rgba(255,255,255,0.5);
+}
+@utility shadow-neo-inset-deep {
+  box-shadow: inset 10px 10px 20px rgba(163,177,198,0.7), inset -10px -10px 20px rgba(255,255,255,0.6);
+}
+@utility shadow-neo-inset-sm {
+  box-shadow: inset 3px 3px 6px rgba(163,177,198,0.6), inset -3px -3px 6px rgba(255,255,255,0.5);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-neo-bg);
+    color: var(--color-neo-text);
+  }
+}

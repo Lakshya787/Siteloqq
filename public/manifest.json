@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "siteloqq",
+  "version": "1.0",
+  "description": "blocks websites",
+
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "favicon_ext.png",
+      "32": "favicon_ext.png",
+      "48": "favicon_ext.png",
+      "128": "favicon_ext.png"
+    }
+  },
+
+  "icons": {
+    "16": "favicon_ext.png",
+    "32": "favicon_ext.png",
+    "48": "favicon_ext.png",
+    "128": "favicon_ext.png"
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    }
+  ],
+
+  "permissions": ["storage"],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["blocked.html"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
