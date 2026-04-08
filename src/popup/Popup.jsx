@@ -17,6 +17,7 @@ const generateWords = (count) => {
 export default function Popup() {
   const [site, setSite] = useState("");
   const [days, setDays] = useState(1);
+  const [hours, setHours] = useState(0);
   const [sites, setSites] = useState([]);
   
   const [unlockingDomain, setUnlockingDomain] = useState(null);
@@ -37,9 +38,14 @@ export default function Popup() {
     clean = clean.split('/')[0];
 
     if (!clean) return;
+    
+    const parsedDays = Number(days) || 0;
+    const parsedHours = Number(hours) || 0;
+    
+    if (parsedDays === 0 && parsedHours === 0) return;
 
     chrome.runtime.sendMessage(
-      { type: "ADD_SITE", payload: { domain: clean, days: Number(days) || 1 } },
+      { type: "ADD_SITE", payload: { domain: clean, days: parsedDays, hours: parsedHours } },
       (updated) => {
         if (updated) setSites(updated);
       }
@@ -75,9 +81,22 @@ export default function Popup() {
     }
   };
   
-  const getDaysRemaining = (blockUntil) => {
+  const getTimeRemainingText = (blockUntil) => {
     const diff = blockUntil - Date.now();
-    return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    if (diff <= 0) return "Expired";
+    
+    const minutes = Math.ceil(diff / (1000 * 60));
+    if (minutes < 60) return `${minutes}m left`;
+    
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    const d = Math.floor(h / 24);
+    const remH = h % 24;
+    
+    if (d > 0 && remH > 0) return `${d}d ${remH}h left`;
+    if (d > 0) return `${d}d left`;
+    if (h > 0 && m > 0) return `${h}h ${m}m left`;
+    return `${h}h left`;
   };
 
   // -------------------------------------------------------------
@@ -182,12 +201,24 @@ export default function Popup() {
             <div className="relative flex-1">
                 <input
                 type="number"
-                value={days}
-                onChange={(e) => setDays(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-full p-4 pl-5 pr-16 rounded-2xl bg-neo-bg shadow-neo-inset-deep outline-none focus:ring-2 focus:ring-neo-accent focus:ring-offset-2 focus:ring-offset-neo-bg transition-shadow text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                min="1"
+                value={days === 0 ? '' : days}
+                onChange={(e) => setDays(Math.max(0, parseInt(e.target.value) || 0))}
+                className="w-full p-4 pl-4 pr-12 rounded-2xl bg-neo-bg shadow-neo-inset-deep outline-none focus:ring-2 focus:ring-neo-accent focus:ring-offset-2 focus:ring-offset-neo-bg transition-shadow text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                min="0"
+                placeholder="0"
                 />
-                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-neo-muted font-bold text-xs uppercase tracking-widest pointer-events-none">days</span>
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neo-muted font-bold text-xs uppercase tracking-widest pointer-events-none">d</span>
+            </div>
+            <div className="relative flex-1">
+                <input
+                type="number"
+                value={hours === 0 ? '' : hours}
+                onChange={(e) => setHours(Math.max(0, parseInt(e.target.value) || 0))}
+                className="w-full p-4 pl-4 pr-12 rounded-2xl bg-neo-bg shadow-neo-inset-deep outline-none focus:ring-2 focus:ring-neo-accent focus:ring-offset-2 focus:ring-offset-neo-bg transition-shadow text-sm font-medium [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                min="0"
+                placeholder="0"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-neo-muted font-bold text-xs uppercase tracking-widest pointer-events-none">h</span>
             </div>
             <button
                 onClick={addSite}
@@ -220,13 +251,23 @@ export default function Popup() {
               key={i}
               className="group flex justify-between items-center bg-neo-bg shadow-neo-sm hover:shadow-neo hover:-translate-y-[1px] transition-all duration-300 p-4 rounded-2xl"
             >
-              <div className="flex flex-col overflow-hidden max-w-[170px]">
-                <span className="text-[15px] font-extrabold truncate text-neo-text">
-                  {s.domain || s}
-                </span>
-                <span className="text-xs font-bold text-neo-muted tracking-wide mt-1">
-                  {s.blockUntil ? `${getDaysRemaining(s.blockUntil)} days left` : 'Legacy block'}
-                </span>
+              <div className="flex items-center gap-3 overflow-hidden">
+                <div className="w-8 h-8 rounded-full bg-neo-bg shadow-neo-inset flex items-center justify-center flex-shrink-0">
+                  <img 
+                    src={`https://www.google.com/s2/favicons?sz=64&domain=${s.domain || s}`} 
+                    alt="" 
+                    className="w-4 h-4 rounded-sm opacity-80 group-hover:opacity-100 transition-opacity"
+                    onError={(e) => { e.target.style.display = 'none' }}
+                  />
+                </div>
+                <div className="flex flex-col overflow-hidden max-w-[130px]">
+                  <span className="text-[15px] font-extrabold truncate text-neo-text">
+                    {s.domain || s}
+                  </span>
+                  <span className="text-xs font-bold text-neo-muted tracking-wide mt-1">
+                    {s.blockUntil ? getTimeRemainingText(s.blockUntil) : 'Legacy block'}
+                  </span>
+                </div>
               </div>
               <button
                 onClick={() => startUnlock(s.domain || s)}

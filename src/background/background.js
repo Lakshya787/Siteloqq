@@ -39,9 +39,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
   if (message.type === "ADD_SITE") {
     getSites((sites) => {
-      // payload will be { domain: "example.com", days: 3 }
-      const { domain, days } = message.payload;
-      const blockUntil = Date.now() + (days * 24 * 60 * 60 * 1000);
+      // payload will be { domain: "example.com", days: 3, hours: 2 }
+      const { domain, days = 0, hours = 0 } = message.payload;
+      const blockUntil = Date.now() + (((days * 24) + hours) * 60 * 60 * 1000);
       
       const existingIdx = sites.findIndex(s => s.domain === domain);
       if (existingIdx !== -1) {
